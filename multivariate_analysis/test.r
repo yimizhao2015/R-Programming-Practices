@@ -1,5 +1,5 @@
 ###load the dataset and prepare data for analysis
-test<- read.csv("~/Desktop/Study/Hunter study/multivariate data analysis/Final papers/test/test.csv", header=T)
+test<- read.csv("test.csv", header=T)
 test.hs<-test[1:3]
 test.gpa<-test[-c(1:3)]
 ###explore the data
