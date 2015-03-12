@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>dplyr Learning Notes</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+</head>
+
+<body>
+<h1>dplyr Learning Notes</h1>
+
+<p>by <a href="www.yimizhao.com">Yimi Zhao</a>   </p>
+
+<h3>Prepare the package and dataset</h3>
+
+<pre><code class="r"># install and load &#39;dplyr&#39; package
+library(dplyr)
+</code></pre>
+
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;
+## 
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union
+</code></pre>
+
+<pre><code class="r"># load &#39;CASchools&#39; dataset in &#39;AER&#39; R package
+library(AER)
+</code></pre>
+
+<pre><code>## Loading required package: car
+## Loading required package: lmtest
+## Loading required package: zoo
+## 
+## Attaching package: &#39;zoo&#39;
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric
+## 
+## Loading required package: sandwich
+## Loading required package: survival
+## Loading required package: splines
+</code></pre>
+
+<pre><code class="r">data(CASchools)
+# check the dataset
+help(CASchools)
+head(CASchools)
+</code></pre>
+
+<pre><code>##   district                          school  county grades students
+## 1    75119              Sunol Glen Unified Alameda  KK-08      195
+## 2    61499            Manzanita Elementary   Butte  KK-08      240
+## 3    61549     Thermalito Union Elementary   Butte  KK-08     1550
+## 4    61457 Golden Feather Union Elementary   Butte  KK-08      243
+## 5    61523        Palermo Union Elementary   Butte  KK-08     1335
+## 6    62042         Burrel Union Elementary  Fresno  KK-08      137
+##   teachers calworks  lunch computer expenditure income english  read  math
+## 1    10.90   0.5102  2.041       67        6385 22.690   0.000 691.6 690.0
+## 2    11.15  15.4167 47.917      101        5099  9.824   4.583 660.5 661.9
+## 3    82.90  55.0323 76.323      169        5502  8.978  30.000 636.3 650.9
+## 4    14.00  36.4754 77.049       85        7102  8.978   0.000 651.9 643.5
+## 5    71.50  33.1086 78.427      171        5236  9.080  13.858 641.8 639.9
+## 6     6.40  12.3188 86.956       25        5580 10.415  12.409 605.7 605.4
+</code></pre>
+
+<h2>A few functions I used in dplyr</h2>
+
+<h3>tbl_df() - Create a data frame table</h3>
+
+<pre><code class="r"># user-friendly display the data A data frame tbl wraps a local data frame.
+# The main advantage to using a tbl_df over a regular data frame is the
+# printing: tbl objects only print a few rows and all the columns that fit
+# on one screen, describing the rest of it as text.
+CAS_tb &lt;- tbl_df(CASchools)
+# display more rows
+print(CAS_tb, n = 20)
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 14]
+## 
+##    district                          school      county grades students
+## 1     75119              Sunol Glen Unified     Alameda  KK-08      195
+## 2     61499            Manzanita Elementary       Butte  KK-08      240
+## 3     61549     Thermalito Union Elementary       Butte  KK-08     1550
+## 4     61457 Golden Feather Union Elementary       Butte  KK-08      243
+## 5     61523        Palermo Union Elementary       Butte  KK-08     1335
+## 6     62042         Burrel Union Elementary      Fresno  KK-08      137
+## 7     68536           Holt Union Elementary San Joaquin  KK-08      195
+## 8     63834             Vineland Elementary        Kern  KK-08      888
+## 9     62331        Orange Center Elementary      Fresno  KK-08      379
+## 10    67306     Del Paso Heights Elementary  Sacramento  KK-06     2247
+## 11    65722       Le Grand Union Elementary      Merced  KK-08      446
+## 12    62174          West Fresno Elementary      Fresno  KK-08      987
+## 13    71795          Allensworth Elementary      Tulare  KK-08      103
+## 14    72181      Sunnyside Union Elementary      Tulare  KK-08      487
+## 15    72298            Woodville Elementary      Tulare  KK-08      649
+## 16    72041         Pixley Union Elementary      Tulare  KK-08      852
+## 17    63594     Lost Hills Union Elementary        Kern  KK-08      491
+## 18    63370   Buttonwillow Union Elementary        Kern  KK-08      421
+## 19    64709               Lennox Elementary Los Angeles  KK-08     6880
+## 20    63560               Lamont Elementary        Kern  KK-08     2688
+## ..      ...                             ...         ...    ...      ...
+## Variables not shown: teachers (dbl), calworks (dbl), lunch (dbl), computer
+##   (dbl), expenditure (dbl), income (dbl), english (dbl), read (dbl), math
+##   (dbl)
+</code></pre>
+
+<h3>filter()- Return rows with matching conditions</h3>
+
+<pre><code class="r"># filter schools with more than 2000 students
+filter(CAS_tb, students &gt; 2000)
+</code></pre>
+
+<pre><code>## Source: local data frame [153 x 14]
+## 
+##    district                      school      county grades students
+## 1     67306 Del Paso Heights Elementary  Sacramento  KK-06     2247
+## 2     64709           Lennox Elementary Los Angeles  KK-08     6880
+## 3     63560           Lamont Elementary        Kern  KK-08     2688
+## 4     63842      Wasco Union Elementary        Kern  KK-08     2538
+## 5     65748 Livingston Union Elementary      Merced  KK-08     2357
+## 6     65961     Alisal Union Elementary    Monterey  KK-06     7306
+## 7     63313      Arvin Union Elementary        Kern  KK-08     2601
+## 8     68379       San Ysidro Elementary   San Diego  KK-08     4142
+## 9     75440             Soledad Unified    Monterey  KK-08     2102
+## 10    64816    Mountain View Elementary Los Angeles  KK-08    10012
+## ..      ...                         ...         ...    ...      ...
+## Variables not shown: teachers (dbl), calworks (dbl), lunch (dbl), computer
+##   (dbl), expenditure (dbl), income (dbl), english (dbl), read (dbl), math
+##   (dbl)
+</code></pre>
+
+<pre><code class="r"># filter schools in Kern and Los Angeles county
+filter(CAS_tb, county == &quot;Los Angeles&quot; | county == &quot;Kern&quot;)
+</code></pre>
+
+<pre><code>## Source: local data frame [54 x 14]
+## 
+##    district                                  school      county grades
+## 1     63834                     Vineland Elementary        Kern  KK-08
+## 2     63594             Lost Hills Union Elementary        Kern  KK-08
+## 3     63370           Buttonwillow Union Elementary        Kern  KK-08
+## 4     64709                       Lennox Elementary Los Angeles  KK-08
+## 5     63560                       Lamont Elementary        Kern  KK-08
+## 6     63842                  Wasco Union Elementary        Kern  KK-08
+## 7     63313                  Arvin Union Elementary        Kern  KK-08
+## 8     64816                Mountain View Elementary Los Angeles  KK-08
+## 9     64758                   Los Nietos Elementary Los Angeles  KK-08
+## 10    63578         Richland-Lerdo Union Elementary        Kern  KK-08
+## 11    63461                      Fairfax Elementary        Kern  KK-08
+## 12    63404                 Delano Union Elementary        Kern  KK-08
+## 13    65078                  Valle Lindo Elementary Los Angeles  KK-08
+## 14    63438                       Edison Elementary        Kern  KK-08
+## 15    63321             Bakersfield City Elementary        Kern  KK-08
+## 16    64592                    Hawthorne Elementary Los Angeles  KK-08
+## 17    65110                Whittier City Elementary Los Angeles  KK-08
+## 18    64477               Eastside Union Elementary Los Angeles  KK-08
+## 19    64691                     Lawndale Elementary Los Angeles  KK-08
+## 20    63339                    Beardsley Elementary        Kern  KK-08
+## 21    65037               South Whittier Elementary Los Angeles  KK-08
+## 22    63420                   Di Giorgio Elementary        Kern  KK-08
+## 23    64642                 Keppel Union Elementary Los Angeles  KK-08
+## 24    64501                El Monte City Elementary Los Angeles  KK-08
+## 25    63503             Greenfield Union Elementary        Kern  KK-08
+## 26    65151                      Wilsona Elementary Los Angeles  KK-08
+## 27    64717             Little Lake City Elementary Los Angeles  KK-08
+## 28    63719                   Pond Union Elementary        Kern  KK-08
+## 29    63800                    Taft City Elementary        Kern  KK-08
+## 30    64857                     Palmdale Elementary Los Angeles  KK-08
+## 31    63792                     Standard Elementary        Kern  KK-08
+## 32    64667                    Lancaster Elementary Los Angeles  KK-08
+## 33    64550                       Garvey Elementary Los Angeles  KK-08
+## 34    63487              General Shafter Elementary        Kern  KK-08
+## 35    64485           East Whittier City Elementary Los Angeles  KK-08
+## 36    73544      Rio Bravo-Greeley Union Elementary        Kern  KK-08
+## 37    63784             South Fork Union Elementary        Kern  KK-08
+## 38    63552               Lakeside Union Elementary        Kern  KK-08
+## 39    64931                     Rosemead Elementary Los Angeles  KK-08
+## 40    63545              Kernville Union Elementary        Kern  KK-08
+## 41    65169                     Wiseburn Elementary Los Angeles  KK-08
+## 42    64345                Castaic Union Elementary Los Angeles  KK-08
+## 43    65102               Westside Union Elementary Los Angeles  KK-08
+## 44    63362     Panama Buena Vista Union Elementary        Kern  KK-08
+## 45    64626 Hughes-Elizabeth Lakes Union Elementary Los Angeles  KK-08
+## 46    65045        Sulphur Springs Union Elementary Los Angeles  KK-06
+## 47    63750               Rosedale Union Elementary        Kern  KK-08
+## 48    63693                       Norris Elementary        Kern  KK-08
+## 49    63610                        Maple Elementary        Kern  KK-08
+## 50    64766                 Lowell Joint Elementary Los Angeles  KK-08
+## 51    64832                      Newhall Elementary Los Angeles  KK-06
+## 52    63479                    Fruitvale Elementary        Kern  KK-08
+## 53    64998                 Saugus Union Elementary Los Angeles  KK-06
+## 54    64600           Hermosa Beach City Elementary Los Angeles  KK-08
+## Variables not shown: students (dbl), teachers (dbl), calworks (dbl), lunch
+##   (dbl), computer (dbl), expenditure (dbl), income (dbl), english (dbl),
+##   read (dbl), math (dbl)
+</code></pre>
+
+<pre><code class="r">filter(CAS_tb, county %in% c(&quot;Los Angeles&quot;, &quot;Kern&quot;))
+</code></pre>
+
+<pre><code>## Source: local data frame [54 x 14]
+## 
+##    district                                  school      county grades
+## 1     63834                     Vineland Elementary        Kern  KK-08
+## 2     63594             Lost Hills Union Elementary        Kern  KK-08
+## 3     63370           Buttonwillow Union Elementary        Kern  KK-08
+## 4     64709                       Lennox Elementary Los Angeles  KK-08
+## 5     63560                       Lamont Elementary        Kern  KK-08
+## 6     63842                  Wasco Union Elementary        Kern  KK-08
+## 7     63313                  Arvin Union Elementary        Kern  KK-08
+## 8     64816                Mountain View Elementary Los Angeles  KK-08
+## 9     64758                   Los Nietos Elementary Los Angeles  KK-08
+## 10    63578         Richland-Lerdo Union Elementary        Kern  KK-08
+## 11    63461                      Fairfax Elementary        Kern  KK-08
+## 12    63404                 Delano Union Elementary        Kern  KK-08
+## 13    65078                  Valle Lindo Elementary Los Angeles  KK-08
+## 14    63438                       Edison Elementary        Kern  KK-08
+## 15    63321             Bakersfield City Elementary        Kern  KK-08
+## 16    64592                    Hawthorne Elementary Los Angeles  KK-08
+## 17    65110                Whittier City Elementary Los Angeles  KK-08
+## 18    64477               Eastside Union Elementary Los Angeles  KK-08
+## 19    64691                     Lawndale Elementary Los Angeles  KK-08
+## 20    63339                    Beardsley Elementary        Kern  KK-08
+## 21    65037               South Whittier Elementary Los Angeles  KK-08
+## 22    63420                   Di Giorgio Elementary        Kern  KK-08
+## 23    64642                 Keppel Union Elementary Los Angeles  KK-08
+## 24    64501                El Monte City Elementary Los Angeles  KK-08
+## 25    63503             Greenfield Union Elementary        Kern  KK-08
+## 26    65151                      Wilsona Elementary Los Angeles  KK-08
+## 27    64717             Little Lake City Elementary Los Angeles  KK-08
+## 28    63719                   Pond Union Elementary        Kern  KK-08
+## 29    63800                    Taft City Elementary        Kern  KK-08
+## 30    64857                     Palmdale Elementary Los Angeles  KK-08
+## 31    63792                     Standard Elementary        Kern  KK-08
+## 32    64667                    Lancaster Elementary Los Angeles  KK-08
+## 33    64550                       Garvey Elementary Los Angeles  KK-08
+## 34    63487              General Shafter Elementary        Kern  KK-08
+## 35    64485           East Whittier City Elementary Los Angeles  KK-08
+## 36    73544      Rio Bravo-Greeley Union Elementary        Kern  KK-08
+## 37    63784             South Fork Union Elementary        Kern  KK-08
+## 38    63552               Lakeside Union Elementary        Kern  KK-08
+## 39    64931                     Rosemead Elementary Los Angeles  KK-08
+## 40    63545              Kernville Union Elementary        Kern  KK-08
+## 41    65169                     Wiseburn Elementary Los Angeles  KK-08
+## 42    64345                Castaic Union Elementary Los Angeles  KK-08
+## 43    65102               Westside Union Elementary Los Angeles  KK-08
+## 44    63362     Panama Buena Vista Union Elementary        Kern  KK-08
+## 45    64626 Hughes-Elizabeth Lakes Union Elementary Los Angeles  KK-08
+## 46    65045        Sulphur Springs Union Elementary Los Angeles  KK-06
+## 47    63750               Rosedale Union Elementary        Kern  KK-08
+## 48    63693                       Norris Elementary        Kern  KK-08
+## 49    63610                        Maple Elementary        Kern  KK-08
+## 50    64766                 Lowell Joint Elementary Los Angeles  KK-08
+## 51    64832                      Newhall Elementary Los Angeles  KK-06
+## 52    63479                    Fruitvale Elementary        Kern  KK-08
+## 53    64998                 Saugus Union Elementary Los Angeles  KK-06
+## 54    64600           Hermosa Beach City Elementary Los Angeles  KK-08
+## Variables not shown: students (dbl), teachers (dbl), calworks (dbl), lunch
+##   (dbl), computer (dbl), expenditure (dbl), income (dbl), english (dbl),
+##   read (dbl), math (dbl)
+</code></pre>
+
+<h3>select() - Select/rename variables by name</h3>
+
+<pre><code class="r"># select() keeps only the variables you mention; rename() keeps all
+# variables to select school,computer, english, read, math variables
+select(CAS_tb, school, computer, english, read, math)
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 5]
+## 
+##                             school computer english  read  math
+## 1               Sunol Glen Unified       67   0.000 691.6 690.0
+## 2             Manzanita Elementary      101   4.583 660.5 661.9
+## 3      Thermalito Union Elementary      169  30.000 636.3 650.9
+## 4  Golden Feather Union Elementary       85   0.000 651.9 643.5
+## 5         Palermo Union Elementary      171  13.858 641.8 639.9
+## 6          Burrel Union Elementary       25  12.409 605.7 605.4
+## 7            Holt Union Elementary       28  68.718 604.5 609.0
+## 8              Vineland Elementary       66  46.959 605.5 612.5
+## 9         Orange Center Elementary       35  30.079 608.9 616.1
+## 10     Del Paso Heights Elementary        0  40.276 611.9 613.4
+## ..                             ...      ...     ...   ...   ...
+</code></pre>
+
+<pre><code class="r"># or
+select(CAS_tb, school, computer, english:math)
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 5]
+## 
+##                             school computer english  read  math
+## 1               Sunol Glen Unified       67   0.000 691.6 690.0
+## 2             Manzanita Elementary      101   4.583 660.5 661.9
+## 3      Thermalito Union Elementary      169  30.000 636.3 650.9
+## 4  Golden Feather Union Elementary       85   0.000 651.9 643.5
+## 5         Palermo Union Elementary      171  13.858 641.8 639.9
+## 6          Burrel Union Elementary       25  12.409 605.7 605.4
+## 7            Holt Union Elementary       28  68.718 604.5 609.0
+## 8              Vineland Elementary       66  46.959 605.5 612.5
+## 9         Orange Center Elementary       35  30.079 608.9 616.1
+## 10     Del Paso Heights Elementary        0  40.276 611.9 613.4
+## ..                             ...      ...     ...   ...   ...
+</code></pre>
+
+<pre><code class="r"># special functions: start_with, ends_with, contains, matches, etc.  seclect
+# variables whose name starts/ends/contains/matches with &#39;s&#39;
+select(CAS_tb, starts_with(&quot;s&quot;))
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 2]
+## 
+##                             school students
+## 1               Sunol Glen Unified      195
+## 2             Manzanita Elementary      240
+## 3      Thermalito Union Elementary     1550
+## 4  Golden Feather Union Elementary      243
+## 5         Palermo Union Elementary     1335
+## 6          Burrel Union Elementary      137
+## 7            Holt Union Elementary      195
+## 8              Vineland Elementary      888
+## 9         Orange Center Elementary      379
+## 10     Del Paso Heights Elementary     2247
+## ..                             ...      ...
+</code></pre>
+
+<pre><code class="r">select(CAS_tb, ends_with(&quot;s&quot;))
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 4]
+## 
+##    grades students teachers calworks
+## 1   KK-08      195    10.90   0.5102
+## 2   KK-08      240    11.15  15.4167
+## 3   KK-08     1550    82.90  55.0323
+## 4   KK-08      243    14.00  36.4754
+## 5   KK-08     1335    71.50  33.1086
+## 6   KK-08      137     6.40  12.3188
+## 7   KK-08      195    10.00  12.9032
+## 8   KK-08      888    42.50  18.8063
+## 9   KK-08      379    19.00  32.1900
+## 10  KK-06     2247   108.00  78.9942
+## ..    ...      ...      ...      ...
+</code></pre>
+
+<pre><code class="r">select(CAS_tb, contains(&quot;s&quot;))
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 7]
+## 
+##    district                          school grades students teachers
+## 1     75119              Sunol Glen Unified  KK-08      195    10.90
+## 2     61499            Manzanita Elementary  KK-08      240    11.15
+## 3     61549     Thermalito Union Elementary  KK-08     1550    82.90
+## 4     61457 Golden Feather Union Elementary  KK-08      243    14.00
+## 5     61523        Palermo Union Elementary  KK-08     1335    71.50
+## 6     62042         Burrel Union Elementary  KK-08      137     6.40
+## 7     68536           Holt Union Elementary  KK-08      195    10.00
+## 8     63834             Vineland Elementary  KK-08      888    42.50
+## 9     62331        Orange Center Elementary  KK-08      379    19.00
+## 10    67306     Del Paso Heights Elementary  KK-06     2247   108.00
+## ..      ...                             ...    ...      ...      ...
+## Variables not shown: calworks (dbl), english (dbl)
+</code></pre>
+
+<pre><code class="r">select(CAS_tb, matches(&quot;.s.&quot;))
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 2]
+## 
+##    district english
+## 1     75119   0.000
+## 2     61499   4.583
+## 3     61549  30.000
+## 4     61457   0.000
+## 5     61523  13.858
+## 6     62042  12.409
+## 7     68536  68.718
+## 8     63834  46.959
+## 9     62331  30.079
+## 10    67306  40.276
+## ..      ...     ...
+</code></pre>
+
+<h3>Chaining or Pipelining</h3>
+
+<pre><code class="r"># write commands in a natural order by using the %&gt;% operator (pronounced as
+# “then”)
+filter(select(CAS_tb, school, students, english:math), students &gt; 10000)
+</code></pre>
+
+<pre><code>## Source: local data frame [24 x 5]
+## 
+##                                 school students english  read  math
+## 1             Mountain View Elementary    10012  65.122 620.8 629.8
+## 2         Ontario-Montclair Elementary    25151  49.823 625.4 626.8
+## 3                    Oxnard Elementary    15386  49.643 627.8 628.7
+## 4           Alum Rock Union Elementary    16244  49.865 629.5 631.2
+## 5          Bakersfield City Elementary    27176  28.864 631.6 629.5
+## 6         Franklin-McKinley Elementary    10696  52.805 628.5 632.6
+## 7        Santa Maria-Bonita Elementary    10625  50.391 629.6 634.2
+## 8                   Anaheim Elementary    20927  58.217 629.6 636.7
+## 9               Merced City Elementary    11474  38.783 633.2 636.2
+## 10            El Monte City Elementary    11629  59.033 632.4 641.4
+## 11                 Palmdale Elementary    19402  18.436 641.7 637.8
+## 12                Lancaster Elementary    13668   9.899 640.4 639.9
+## 13          South Bay Union Elementary    10218  41.133 638.6 644.3
+## 14          Rio Linda Union Elementary    10337  12.354 646.0 643.1
+## 15              Chula Vista Elementary    21338  34.338 645.0 649.5
+## 16          Escondido Union Elementary    18255  39.595 645.0 651.0
+## 17                Fullerton Elementary    12567  27.540 651.6 652.6
+## 18       Cajon Valley Union Elementary    19294  16.663 657.6 656.4
+## 19                Oak Grove Elementary    11855  20.725 654.9 663.2
+## 20                Evergreen Elementary    11885  29.121 659.1 664.1
+## 21 Panama Buena Vista Union Elementary    12380   4.814 660.1 663.6
+## 22    San Mateo-Foster City Elementary    10619  18.457 665.9 664.0
+## 23               La Mesa-Spring Valley    14708  12.680 664.5 667.4
+## 24          Cupertino Union Elementary    15228   8.649 683.1 690.3
+</code></pre>
+
+<pre><code class="r"># can be write in this way
+CAS_tb %&gt;% select(school, students, english:math) %&gt;% filter(students &gt; 10000)
+</code></pre>
+
+<pre><code>## Source: local data frame [24 x 5]
+## 
+##                                 school students english  read  math
+## 1             Mountain View Elementary    10012  65.122 620.8 629.8
+## 2         Ontario-Montclair Elementary    25151  49.823 625.4 626.8
+## 3                    Oxnard Elementary    15386  49.643 627.8 628.7
+## 4           Alum Rock Union Elementary    16244  49.865 629.5 631.2
+## 5          Bakersfield City Elementary    27176  28.864 631.6 629.5
+## 6         Franklin-McKinley Elementary    10696  52.805 628.5 632.6
+## 7        Santa Maria-Bonita Elementary    10625  50.391 629.6 634.2
+## 8                   Anaheim Elementary    20927  58.217 629.6 636.7
+## 9               Merced City Elementary    11474  38.783 633.2 636.2
+## 10            El Monte City Elementary    11629  59.033 632.4 641.4
+## 11                 Palmdale Elementary    19402  18.436 641.7 637.8
+## 12                Lancaster Elementary    13668   9.899 640.4 639.9
+## 13          South Bay Union Elementary    10218  41.133 638.6 644.3
+## 14          Rio Linda Union Elementary    10337  12.354 646.0 643.1
+## 15              Chula Vista Elementary    21338  34.338 645.0 649.5
+## 16          Escondido Union Elementary    18255  39.595 645.0 651.0
+## 17                Fullerton Elementary    12567  27.540 651.6 652.6
+## 18       Cajon Valley Union Elementary    19294  16.663 657.6 656.4
+## 19                Oak Grove Elementary    11855  20.725 654.9 663.2
+## 20                Evergreen Elementary    11885  29.121 659.1 664.1
+## 21 Panama Buena Vista Union Elementary    12380   4.814 660.1 663.6
+## 22    San Mateo-Foster City Elementary    10619  18.457 665.9 664.0
+## 23               La Mesa-Spring Valley    14708  12.680 664.5 667.4
+## 24          Cupertino Union Elementary    15228   8.649 683.1 690.3
+</code></pre>
+
+<h3>arrange() - Arrange rows by variables/columns</h3>
+
+<pre><code class="r">arrange(CAS_tb, desc(students))
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 14]
+## 
+##    district                        school         county grades students
+## 1     63321   Bakersfield City Elementary           Kern  KK-08    27176
+## 2     67819  Ontario-Montclair Elementary San Bernardino  KK-08    25151
+## 3     68023        Chula Vista Elementary      San Diego  KK-06    21338
+## 4     66423            Anaheim Elementary         Orange  KK-06    20927
+## 5     64857           Palmdale Elementary    Los Angeles  KK-08    19402
+## 6     67991 Cajon Valley Union Elementary      San Diego  KK-08    19294
+## 7     68098    Escondido Union Elementary      San Diego  KK-08    18255
+## 8     69369    Alum Rock Union Elementary    Santa Clara  KK-08    16244
+## 9     72538             Oxnard Elementary        Ventura  KK-08    15386
+## 10    69419    Cupertino Union Elementary    Santa Clara  KK-08    15228
+## ..      ...                           ...            ...    ...      ...
+## Variables not shown: teachers (dbl), calworks (dbl), lunch (dbl), computer
+##   (dbl), expenditure (dbl), income (dbl), english (dbl), read (dbl), math
+##   (dbl)
+</code></pre>
+
+<pre><code class="r">arrange(CAS_tb, county, school)
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 14]
+## 
+##    district                          school       county grades students
+## 1     75119              Sunol Glen Unified      Alameda  KK-08      195
+## 2     61382         Bangor Union Elementary        Butte  KK-08      146
+## 3     61457 Golden Feather Union Elementary        Butte  KK-08      243
+## 4     61499            Manzanita Elementary        Butte  KK-08      240
+## 5     61507        Oroville City Elementary        Butte  KK-08     3401
+## 6     61523        Palermo Union Elementary        Butte  KK-08     1335
+## 7     61549     Thermalito Union Elementary        Butte  KK-08     1550
+## 8     61572     Mark Twain Union Elementary    Calaveras  KK-08      777
+## 9     61655      Brentwood Union Elementary Contra Costa  KK-08     3519
+## 10    61705            Knightsen Elementary Contra Costa  KK-08      353
+## ..      ...                             ...          ...    ...      ...
+## Variables not shown: teachers (dbl), calworks (dbl), lunch (dbl), computer
+##   (dbl), expenditure (dbl), income (dbl), english (dbl), read (dbl), math
+##   (dbl)
+</code></pre>
+
+<h3>mutate() - Add new variables/columns</h3>
+
+<pre><code class="r"># add a variable refers to number of teachers per 100 students
+head(mutate(CASchools, teacher_of_student = teachers/students * 100))
+</code></pre>
+
+<pre><code>##   district                          school  county grades students
+## 1    75119              Sunol Glen Unified Alameda  KK-08      195
+## 2    61499            Manzanita Elementary   Butte  KK-08      240
+## 3    61549     Thermalito Union Elementary   Butte  KK-08     1550
+## 4    61457 Golden Feather Union Elementary   Butte  KK-08      243
+## 5    61523        Palermo Union Elementary   Butte  KK-08     1335
+## 6    62042         Burrel Union Elementary  Fresno  KK-08      137
+##   teachers calworks  lunch computer expenditure income english  read  math
+## 1    10.90   0.5102  2.041       67        6385 22.690   0.000 691.6 690.0
+## 2    11.15  15.4167 47.917      101        5099  9.824   4.583 660.5 661.9
+## 3    82.90  55.0323 76.323      169        5502  8.978  30.000 636.3 650.9
+## 4    14.00  36.4754 77.049       85        7102  8.978   0.000 651.9 643.5
+## 5    71.50  33.1086 78.427      171        5236  9.080  13.858 641.8 639.9
+## 6     6.40  12.3188 86.956       25        5580 10.415  12.409 605.7 605.4
+##   teacher_of_student
+## 1              5.590
+## 2              4.646
+## 3              5.348
+## 4              5.761
+## 5              5.356
+## 6              4.672
+</code></pre>
+
+<pre><code class="r"># or
+CAS_tb %&gt;% select(school, teachers, students) %&gt;% mutate(teacher_of_student = teachers/students * 
+    100)
+</code></pre>
+
+<pre><code>## Source: local data frame [420 x 4]
+## 
+##                             school teachers students teacher_of_student
+## 1               Sunol Glen Unified    10.90      195              5.590
+## 2             Manzanita Elementary    11.15      240              4.646
+## 3      Thermalito Union Elementary    82.90     1550              5.348
+## 4  Golden Feather Union Elementary    14.00      243              5.761
+## 5         Palermo Union Elementary    71.50     1335              5.356
+## 6          Burrel Union Elementary     6.40      137              4.672
+## 7            Holt Union Elementary    10.00      195              5.128
+## 8              Vineland Elementary    42.50      888              4.786
+## 9         Orange Center Elementary    19.00      379              5.013
+## 10     Del Paso Heights Elementary   108.00     2247              4.806
+## ..                             ...      ...      ...                ...
+</code></pre>
+
+<pre><code class="r"># or store the new variable
+CAS_tb &lt;- CAS_tb %&gt;% mutate(teacher_of_student = teachers/students * 100)
+</code></pre>
+
+<h3>group_by() and summarise()</h3>
+
+<pre><code class="r"># summary the average students in each county using default R code
+with(CASchools, tapply(students, county, mean))
+</code></pre>
+
+<pre><code>##         Alameda           Butte       Calaveras    Contra Costa 
+##           195.0          1152.5           777.0          2725.9 
+##       El Dorado          Fresno           Glenn        Humboldt 
+##          1372.9           504.4           137.7           379.7 
+##        Imperial            Inyo            Kern           Kings 
+##          1936.0          1510.0          3108.3          1507.4 
+##            Lake          Lassen     Los Angeles          Madera 
+##           445.0           565.2          5830.9          1021.8 
+##           Marin       Mendocino          Merced        Monterey 
+##          1642.9           337.0          2112.0          3549.4 
+##          Nevada          Orange          Placer       Riverside 
+##           951.0          8223.9          1880.8          2848.5 
+##      Sacramento      San Benito  San Bernardino       San Diego 
+##          3511.4          2146.7          6469.7          6170.3 
+##     San Joaquin San Luis Obispo       San Mateo   Santa Barbara 
+##           366.0           217.5          3289.2          2409.3 
+##     Santa Clara      Santa Cruz          Shasta        Siskiyou 
+##          5931.9          1184.6           936.8           430.2 
+##          Sonoma      Stanislaus          Sutter          Tehama 
+##           984.0          3006.0           259.2           859.1 
+##         Trinity          Tulare        Tuolumne         Ventura 
+##           294.0           899.0           652.2          4627.8 
+##            Yuba 
+##           939.5
+</code></pre>
+
+<pre><code class="r">aggregate(students ~ county, CASchools, mean)
+</code></pre>
+
+<pre><code>##             county students
+## 1          Alameda    195.0
+## 2            Butte   1152.5
+## 3        Calaveras    777.0
+## 4     Contra Costa   2725.9
+## 5        El Dorado   1372.9
+## 6           Fresno    504.4
+## 7            Glenn    137.7
+## 8         Humboldt    379.7
+## 9         Imperial   1936.0
+## 10            Inyo   1510.0
+## 11            Kern   3108.3
+## 12           Kings   1507.4
+## 13            Lake    445.0
+## 14          Lassen    565.2
+## 15     Los Angeles   5830.9
+## 16          Madera   1021.8
+## 17           Marin   1642.9
+## 18       Mendocino    337.0
+## 19          Merced   2112.0
+## 20        Monterey   3549.4
+## 21          Nevada    951.0
+## 22          Orange   8223.9
+## 23          Placer   1880.8
+## 24       Riverside   2848.5
+## 25      Sacramento   3511.4
+## 26      San Benito   2146.7
+## 27  San Bernardino   6469.7
+## 28       San Diego   6170.3
+## 29     San Joaquin    366.0
+## 30 San Luis Obispo    217.5
+## 31       San Mateo   3289.2
+## 32   Santa Barbara   2409.3
+## 33     Santa Clara   5931.9
+## 34      Santa Cruz   1184.6
+## 35          Shasta    936.8
+## 36        Siskiyou    430.2
+## 37          Sonoma    984.0
+## 38      Stanislaus   3006.0
+## 39          Sutter    259.2
+## 40          Tehama    859.1
+## 41         Trinity    294.0
+## 42          Tulare    899.0
+## 43        Tuolumne    652.2
+## 44         Ventura   4627.8
+## 45            Yuba    939.5
+</code></pre>
+
+<pre><code class="r"># dplyr way
+CASchools %&gt;% group_by(county) %&gt;% summarise(avg_students = mean(students))
+</code></pre>
+
+<pre><code>## Source: local data frame [45 x 2]
+## 
+##             county avg_students
+## 1          Alameda        195.0
+## 2            Butte       1152.5
+## 3        Calaveras        777.0
+## 4     Contra Costa       2725.9
+## 5        El Dorado       1372.9
+## 6           Fresno        504.4
+## 7            Glenn        137.7
+## 8         Humboldt        379.7
+## 9         Imperial       1936.0
+## 10            Inyo       1510.0
+## 11            Kern       3108.3
+## 12           Kings       1507.4
+## 13            Lake        445.0
+## 14          Lassen        565.2
+## 15     Los Angeles       5830.9
+## 16          Madera       1021.8
+## 17           Marin       1642.9
+## 18       Mendocino        337.0
+## 19          Merced       2112.0
+## 20        Monterey       3549.4
+## 21          Nevada        951.0
+## 22          Orange       8223.9
+## 23          Placer       1880.8
+## 24       Riverside       2848.5
+## 25      Sacramento       3511.4
+## 26      San Benito       2146.7
+## 27  San Bernardino       6469.7
+## 28       San Diego       6170.3
+## 29     San Joaquin        366.0
+## 30 San Luis Obispo        217.5
+## 31       San Mateo       3289.2
+## 32   Santa Barbara       2409.3
+## 33     Santa Clara       5931.9
+## 34      Santa Cruz       1184.6
+## 35          Shasta        936.8
+## 36        Siskiyou        430.2
+## 37          Sonoma        984.0
+## 38      Stanislaus       3006.0
+## 39          Sutter        259.2
+## 40          Tehama        859.1
+## 41         Trinity        294.0
+## 42          Tulare        899.0
+## 43        Tuolumne        652.2
+## 44         Ventura       4627.8
+## 45            Yuba        939.5
+</code></pre>
+
+<h3>sample_n() and sample_frac - Sample n rows/fraction from a table</h3>
+
+<pre><code class="r"># similar with sample() and sample_int in base R sample 10 rows with/without
+# replacement in base R way
+CASchools[sample(nrow(CASchools), 10), ]
+</code></pre>
+
+<pre><code>##     district                          school      county grades students
+## 342    61879       Gold Oak Union Elementary   El Dorado  KK-08      868
+## 60     72561                  Rio Elementary     Ventura  KK-08     3074
+## 200    67116        Menifee Union Elementary   Riverside  KK-08     4523
+## 323    69575             Moreland Elementary Santa Clara  KK-08     4632
+## 120    71969    Kings River Union Elementary      Tulare  KK-08      474
+## 368    66373 Pleasant Ridge Union Elementary      Nevada  KK-08     2089
+## 159    72231          Tulare City Elementary      Tulare  KK-08     7210
+## 418    72611          Somis Union Elementary     Ventura  KK-08      441
+## 249    69625            Oak Grove Elementary Santa Clara  KK-08    11855
+## 288    70847      Old Adobe Union Elementary      Sonoma  KK-06     2231
+##     teachers calworks lunch computer expenditure income english  read
+## 342    45.00    4.723 19.01      122        5118  15.17  0.0000 674.6
+## 60    142.55   11.290 66.19      249        5034  11.59 38.1588 633.2
+## 200   215.00    5.752 29.20      409        4747  14.06 10.4356 653.7
+## 323   245.18    7.037 23.64      637        5667  20.47 17.8541 669.4
+## 120    26.61   20.675 82.07       96        4945  11.24 35.4430 638.9
+## 368   102.78    2.519 14.04      318        4994  16.36  0.1436 673.8
+## 159   360.35   26.627 68.86      800        5159  10.10 15.1872 642.5
+## 418    20.15    3.563 37.19       45        4403  23.73 24.2630 648.3
+## 249   588.84    9.016 32.77     1507        5486  17.44 20.7254 654.9
+## 288   114.30    2.916 13.37      258        5600  16.96 13.6262 666.2
+##      math
+## 342 668.0
+## 60  632.5
+## 200 653.1
+## 323 666.6
+## 120 644.7
+## 368 679.3
+## 159 651.6
+## 418 641.7
+## 249 663.2
+## 288 661.8
+</code></pre>
+
+<pre><code class="r">CASchools[sample(nrow(CASchools), 10, replace = T), ]
+</code></pre>
+
+<pre><code>##     district                           school      county grades students
+## 403    68387          Solana Beach Elementary   San Diego  KK-06     2542
+## 335    71654             Richfield Elementary      Tehama  KK-08      187
+## 347    64998          Saugus Union Elementary Los Angeles  KK-06     8529
+## 214    68189        Lakeside Union Elementary   San Diego  KK-08     4928
+## 116    69617          Mt. Pleasant Elementary Santa Clara  KK-08     2911
+## 331    64766          Lowell Joint Elementary Los Angeles  KK-08     3303
+## 178    72405           Summerville Elementary    Tuolumne  KK-08      474
+## 2      61499             Manzanita Elementary       Butte  KK-08      240
+## 43     63461               Fairfax Elementary        Kern  KK-08     1217
+## 276    65045 Sulphur Springs Union Elementary Los Angeles  KK-06     5010
+##     teachers calworks  lunch computer expenditure income english  read
+## 403   146.30   0.8261  9.677      404        6604 27.948  10.386 687.7
+## 335     9.76  17.5532 44.681       37        4358  9.485   8.556 664.6
+## 347   407.70   2.1925 11.701      834        4715 20.739   3.705 668.9
+## 214   229.20   8.5420 25.889      618        5140 14.623   5.925 653.5
+## 116   139.47  11.9285 52.973      281        5220 15.968  39.024 640.4
+## 331   146.50   4.6624 16.954      379        4969 18.119   5.026 666.1
+## 178    26.34  21.9959 54.990       61        5635 10.521   0.000 653.6
+## 2      11.15  15.4167 47.917      101        5099  9.824   4.583 660.5
+## 43     61.40  33.9080 88.095       78        5485  8.174  30.320 629.4
+## 276   239.40   5.2989 27.354      576        4802 19.823   9.641 661.7
+##      math
+## 403 695.0
+## 335 674.1
+## 347 674.6
+## 214 656.2
+## 116 641.8
+## 331 672.1
+## 178 647.7
+## 2   661.9
+## 43  627.7
+## 276 663.4
+</code></pre>
+
+<pre><code class="r"># dplyr way
+sample_n(CASchools, 10)
+</code></pre>
+
+<pre><code>##     district                       school      county grades students
+## 48     63438            Edison Elementary        Kern  KK-08      814
+## 60     72561               Rio Elementary     Ventura  KK-08     3074
+## 281    70425  Mt. Shasta Union Elementary    Siskiyou  KK-08      822
+## 152    68627     New Jerusalem Elementary San Joaquin  KK-08      222
+## 335    71654         Richfield Elementary      Tehama  KK-08      187
+## 201    63552    Lakeside Union Elementary        Kern  KK-08      793
+## 21     63230 Westmorland Union Elementary    Imperial  KK-08      440
+## 215    71423           Nuestro Elementary      Sutter  KK-08      103
+## 84     65862      Weaver Union Elementary      Merced  KK-08     1313
+## 126    67157      Nuview Union Elementary   Riverside  KK-08     1255
+##     teachers calworks  lunch computer expenditure income english  read
+## 48     39.00   19.779  67.44       85        4518 15.177 13.7592 631.9
+## 60    142.55   11.290  66.19      249        5034 11.592 38.1588 633.2
+## 281    46.65    8.074  25.61      105        5785 14.163  0.8516 668.3
+## 152    11.66    7.589  40.62       30        4887 14.578 13.5135 643.0
+## 335     9.76   17.553  44.68       37        4358  9.485  8.5561 664.6
+## 201    39.80    4.414  30.77       49        4944 19.068  2.2699 652.4
+## 21     24.00   34.773 100.00       69        5726  7.941 40.6818 615.6
+## 215     5.00    5.825  23.30       13        5249  8.776  0.9709 662.2
+## 84     75.08   32.087  73.60      112        5653  9.972 34.6535 633.9
+## 126    55.00   11.322  44.26      165        4880 15.274 16.0956 642.6
+##      math
+## 48  628.9
+## 60  632.5
+## 281 657.5
+## 152 649.7
+## 335 674.1
+## 201 654.6
+## 21  625.4
+## 215 647.6
+## 84  638.3
+## 126 643.8
+</code></pre>
+
+<pre><code class="r">sample_n(CASchools, 10, replace = T)
+</code></pre>
+
+<pre><code>##     district                      school      county grades students
+## 371    71787      Weaverville Elementary     Trinity  KK-08      449
+## 11     65722   Le Grand Union Elementary      Merced  KK-08      446
+## 49     63321 Bakersfield City Elementary        Kern  KK-08    27176
+## 324    63610            Maple Elementary        Kern  KK-08      224
+## 376    68080  Encinitas Union Elementary   San Diego  KK-06     5259
+## 246    63024     Scotia Union Elementary    Humboldt  KK-08      370
+## 19     64709           Lennox Elementary Los Angeles  KK-08     6880
+## 180    70821       Montgomery Elementary      Sonoma  KK-08       92
+## 228    70094    Pacheco Union Elementary      Shasta  KK-08      859
+## 179    66860            Ophir Elementary      Placer  KK-08      223
+##     teachers calworks lunch computer expenditure income english  read
+## 371    25.50   12.727 48.48       50        5884 12.934  0.0000 672.8
+## 11     21.00   18.610 85.87       86        4548  8.931 52.9148 612.8
+## 49   1429.00   39.218 84.29     3324        5864 12.109 28.8637 631.6
+## 324     9.00    5.357 35.27       15        4743  9.709  4.4643 660.5
+## 376   262.23    2.396 19.09      701        5282 23.806 15.0599 679.0
+## 246    19.80    6.504 36.31       56        4385 12.174  0.5405 664.0
+## 19    303.03   21.282 94.97      960        5065  7.022 77.0058 619.1
+## 180     5.60   13.542  0.00       22        6114 22.529  0.0000 656.1
+## 228    42.84   16.414 40.16      118        5730 12.666  0.1164 654.1
+## 179    11.50    1.754 17.54       60        4980 18.626  0.0000 651.8
+##      math
+## 371 681.1
+## 11  618.7
+## 49  629.5
+## 324 675.7
+## 376 678.6
+## 246 652.7
+## 19  620.5
+## 180 645.7
+## 228 658.7
+## 179 650.0
+</code></pre>
+
+<pre><code class="r">sample_frac(CASchools, 0.05)  # sample 5% of the rows
+</code></pre>
+
+<pre><code>##     district                         school         county grades students
+## 50     69450   Franklin-McKinley Elementary    Santa Clara  KK-08    10696
+## 338    69955    Cottonwood Union Elementary         Shasta  KK-08     1212
+## 391    69773            Mountain Elementary     Santa Cruz  KK-06      158
+## 53     66142        Salinas City Elementary       Monterey  KK-06     9028
+## 243    66472           Centralia Elementary         Orange  KK-06     5205
+## 45     67199              Perris Elementary      Riverside  KK-06     4258
+## 300    67736           Helendale Elementary San Bernardino  KK-08      580
+## 140    67405     Rio Linda Union Elementary     Sacramento  KK-06    10337
+## 328    72108           Saucelito Elementary         Tulare  KK-08      118
+## 20     63560              Lamont Elementary           Kern  KK-08     2688
+## 376    68080     Encinitas Union Elementary      San Diego  KK-06     5259
+## 323    69575            Moreland Elementary    Santa Clara  KK-08     4632
+## 263    68973            Millbrae Elementary      San Mateo  KK-08     2325
+## 267    68932 Laguna Salada Union Elementary      San Mateo  KK-08     3772
+## 84     65862        Weaver Union Elementary         Merced  KK-08     1313
+## 125    71837              Burton Elementary         Tulare  KK-08     2208
+## 201    63552      Lakeside Union Elementary           Kern  KK-08      793
+## 314    72553     Pleasant Valley Elementary        Ventura  KK-08     7116
+## 414    68981      Portola Valley Elementary      San Mateo  KK-08      687
+## 306    69336             Solvang Elementary  Santa Barbara  KK-08      675
+## 46     65078         Valle Lindo Elementary    Los Angeles  KK-08     1235
+##     teachers calworks lunch computer expenditure income english  read
+## 50    487.97  22.1578 70.90     1306        5258 11.785  52.805 628.5
+## 338    65.90  22.1947 46.12      116        5091 10.551   3.960 669.2
+## 391     7.80  13.7500 16.25       15        5399 20.474   0.000 687.3
+## 53    449.92  13.9885 69.94      669        5471 13.405  37.494 633.0
+## 243   242.50   8.3189 37.29      474        4954 15.750  22.939 655.1
+## 45    221.00  24.6595 92.74      324        5093 10.050  36.801 626.5
+## 300    29.44  11.8966 30.17      114        5180 15.297   3.966 656.2
+## 140   540.05  37.2269 58.55     1268        5456 12.343  12.354 646.0
+## 328     5.50   8.3333 51.67       10        4451  8.934   7.627 668.5
+## 20    135.00  23.4375 93.23      139        5434  5.699  49.814 621.3
+## 376   262.23   2.3959 19.09      701        5282 23.806  15.060 679.0
+## 323   245.18   7.0370 23.64      637        5667 20.470  17.854 669.4
+## 263   115.30   2.8817 15.66      302        4891 21.111  22.710 662.0
+## 267   178.06   3.3720 18.39      529        4942 18.544   5.249 665.4
+## 84     75.08  32.0868 73.60      112        5653  9.972  34.653 633.9
+## 125   114.50  14.4140 53.21       92        4961  9.630   9.873 642.0
+## 201    39.80   4.4136 30.77       49        4944 19.068   2.270 652.4
+## 314   356.82   2.5990 13.28      785        5008 20.936   7.996 667.5
+## 414    44.59   0.3049  0.00      209        7217 50.677   1.164 698.3
+## 306    33.70   0.0000 31.85       87        4543 21.957  14.963 668.7
+## 46     53.00   8.2183 62.13      175        4360  7.332  30.283 630.2
+##      math
+## 50  632.6
+## 338 670.7
+## 391 678.0
+## 53  630.7
+## 243 660.5
+## 45  631.0
+## 300 674.2
+## 140 643.1
+## 328 669.1
+## 20  619.3
+## 376 678.6
+## 323 666.6
+## 263 660.9
+## 267 658.3
+## 84  638.3
+## 125 644.1
+## 201 654.6
+## 314 665.8
+## 414 699.9
+## 306 663.4
+## 46  629.4
+</code></pre>
+
+</body>
+
+</html>
+

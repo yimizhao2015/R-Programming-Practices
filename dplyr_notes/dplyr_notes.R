@@ -1,0 +1,86 @@
+#### dplyr Learning Notes by Yimi Zhao ####
+
+### Prepare the package and dataset ###
+# install and load "dplyr" package
+install.packages("dplyr")
+library(dplyr)
+# load "CASchools" dataset in "AER" R package
+library(AER)
+data(CASchools)
+# check the dataset
+help(CASchools)
+head(CASchools)
+
+### A few functions I used ###
+## tbl_df() - Create a data frame table ##
+# user-friendly display the data
+# A data frame tbl wraps a local data frame. The main advantage to using a tbl_df over a regular data
+# frame is the printing: tbl objects only print a few rows and all the columns that fit on one screen,
+# describing the rest of it as text.
+CAS_tb<-tbl_df(CASchools)
+# display more rows
+print(CAS_tb,n=20)
+
+## filter()- Return rows with matching conditions ##
+# filter schools with more than 2000 students 
+filter(CAS_tb, students >2000)
+# filter schools in Kern and Los Angeles county
+filter(CAS_tb, county=="Los Angeles" | county=="Kern")
+filter(CAS_tb, county %in% c("Los Angeles","Kern"))
+
+## select() - Select/rename variables by name ##
+# select() keeps only the variables you mention; rename() keeps all variables
+# to select school,computer, english, read, math variables
+select(CAS_tb,school,computer, english, read,math)
+# or 
+select(CAS_tb,school,computer, english:math)
+# special functions: start_with, ends_with, contains, matches, etc.
+# seclect variables whose name starts/ends/contains/matches with "s"
+select(CAS_tb, starts_with("s"))
+select(CAS_tb, ends_with("s"))
+select(CAS_tb, contains("s"))
+select(CAS_tb, matches(".s."))
+
+## Chaining or Pipelining ##
+# write commands in a natural order by using the %>% operator (pronounced as “then”)
+filter(select(CAS_tb,school,students,english:math),students>10000)
+# can be write in this way
+CAS_tb %>%
+    select(school,students,english:math) %>%
+    filter(students>10000)
+
+## arrange() - Arrange rows by variables/columns ##
+arrange(CAS_tb,desc(students))
+arrange(CAS_tb,county, school)
+
+## mutate() - Add new variables/columns
+# add a variable refers to number of teachers per 100 students
+head(mutate(CASchools,teacher_of_student = teachers/students*100))
+#or 
+CAS_tb %>%
+    select(school,teachers, students) %>%
+    mutate(teacher_of_student = teachers/students*100)
+# or store the new variable 
+CAS_tb <- CAS_tb %>%  mutate(teacher_of_student = teachers/students*100)
+  
+## group_by() and summarise() ##
+# summary the average students in each county
+# using default R code
+with(CASchools,tapply(students,county,mean))
+aggregate(students~county,CASchools,mean)
+# dplyr way
+CASchools %>%
+    group_by(county)%>%
+    summarise(avg_students=mean(students))
+
+## sample_n() and sample_frac - Sample n rows/fraction from a table 
+# similar with sample() and sample_int in base R
+# sample 10 rows with/without replacement in base R way
+CASchools[sample(nrow(CASchools),10),]
+CASchools[sample(nrow(CASchools),10,replace=T),]
+# dplyr way
+sample_n(CASchools,10)
+sample_n(CASchools,10,replace=T)
+sample_frac(CASchools, 0.1) # sample 10% of the rows
+
+     
